@@ -27,9 +27,21 @@ module "ekscluster" {
   env_prefix       = "${var.env_prefix}-${terraform.workspace}"
 }
 
+# provider "helm" {
+#   kubernetes {
+#     config_path = "~/.kube/config"
+#   }
+# }
+
 provider "helm" {
   kubernetes {
-    config_path = "~/.kube/config"
+    host                   = module.ekscluster.endpoint
+    cluster_ca_certificate = base64decode(module.ekscluster.kubeconfig-certificate-authority-data)
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      args        = ["eks", "get-token", "--cluster-name", "${var.env_prefix}-${terraform.workspace}_cluster"]
+      command     = "aws"
+    }
   }
 }
 
@@ -40,15 +52,28 @@ resource "helm_release" "argocd" {
 
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
+  values = [
+    "${file("./argocd/values-argo.yaml")}"
+  ]
 
   set {
     name  = "service.type"
     value = "ClusterIP"
   }
+  # set {
+  #   name  = "configs.secret.credentialTemplates.ssh-creds.sshPrivateKey"
+  #   value = file(var.argocd_ssh_location)
+  #   # "trimspace" func in order to remove spaces
+  # }
   set {
-    name  = "configs.secret.argocdServerAdminPassword"
-    value = bcrypt("12345678")
+    name  = "configs.credentialTemplates.ssh-creds.sshPrivateKey"
+    value = file(var.argocd_ssh_location)
+    # "trimspace" func in order to remove spaces
   }
+  # set {
+  #   name  = "configs.secret.argocdServerAdminPassword"
+  #   value = bcrypt("12345678")
+  # }
   depends_on = [
     module.ekscluster,
     module.network
