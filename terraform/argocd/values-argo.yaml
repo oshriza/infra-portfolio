@@ -18,9 +18,6 @@ server:
         repoURL: 'git@github.com:oshriza/gitops-portfolio-taskmanager.git'
         targetRevision: HEAD
         path: apps
-        directory:
-          recurse: true
-
       destination:
         namespace: default
         server: https://kubernetes.default.svc
@@ -41,8 +38,25 @@ server:
         repoURL: 'git@github.com:oshriza/gitops-portfolio-taskmanager.git'
         targetRevision: HEAD
         path: apps-layer2
-        directory:
-          recurse: true
+      destination:
+        namespace: default
+        server: https://kubernetes.default.svc
+      project: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+
+    - name: apps-layer3
+      namespace: argocdeks
+      additionalLabels: {}
+      additionalAnnotations: {}
+      source:
+        repoURL: 'git@github.com:oshriza/gitops-portfolio-taskmanager.git'
+        targetRevision: HEAD
+        path: task-manager-app-layer3
       destination:
         namespace: default
         server: https://kubernetes.default.svc
