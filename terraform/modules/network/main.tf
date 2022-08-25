@@ -32,7 +32,7 @@ resource "aws_subnet" "private" {
   tags = {
     "Name"                       = "${var.env_prefix}-private-${count.index + 1}"
     "kubernetes.io/role/internal-elb" = "1"
-    "kubernetes.io/cluster/oshri_cluster" = "shared"
+    "kubernetes.io/cluster/${var.env_prefix}_cluster" = "shared"
     Created_by = "Terraform"
   }
 }
@@ -47,7 +47,7 @@ resource "aws_subnet" "public" {
   tags = {
     "Name"                       = "${var.env_prefix}-public-${count.index + 1}"
     "kubernetes.io/role/elb"     = "1"
-    "kubernetes.io/cluster/oshri_cluster" = "shared"
+    "kubernetes.io/cluster/${var.env_prefix}_cluster" = "shared"
     Created_by = "Terraform"
   }
 }

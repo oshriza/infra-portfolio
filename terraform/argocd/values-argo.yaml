@@ -2,13 +2,11 @@ configs:
   credentialTemplates:
     ssh-creds:
       url: "git@github.com:oshriza"
-
     # https-creds:
     #   url: 'https://github.com/oshriza'
     #   username: oshriza
   secret:
-    argocdServerAdminPassword: $2a$10$D1poV4uPGjDU3YEuj8fdyeMnQWxjW7jqRwHbqva07khW6p76dxjfi
-    
+    argocdServerAdminPassword: $2a$10$D1poV4uPGjDU3YEuj8fdyeMnQWxjW7jqRwHbqva07khW6p76dxjfi 
 
 server:
   additionalApplications:
@@ -60,17 +58,19 @@ server:
     enabled: true
     https: true
     host:
-      - oshri-argocd.com
+      - oshri-portfolio.ddns.net
     annotations:
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     hosts: 
-      - oshri-argocd.com
+      - oshri-portfolio.ddns.net
     paths:
-      - /
+      - /argocd
   extraArgs:
     - --insecure
+    - --rootpath
+    - /argocd
 
 
 # #################################
