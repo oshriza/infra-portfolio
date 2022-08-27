@@ -71,23 +71,23 @@ server:
         syncOptions:
           - CreateNamespace=true
 
-  # ingress:
-  #   enabled: true
-  #   https: true
-  #   host:
-  #     - oshri-portfolio.ddns.net
-  #   annotations:
-  #     kubernetes.io/ingress.class: nginx
-  #     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-  #     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-  #   hosts: 
-  #     - oshri-portfolio.ddns.net
-  #   paths:
-  #     - /argocd
-  # extraArgs:
-  #   - --insecure
-  #   - --rootpath
-  #   - /argocd
+  ingress:
+    enabled: true
+    https: true
+    host:
+      - oshri-portfolio.ddns.net
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    hosts: 
+      - oshri-portfolio.ddns.net
+    paths:
+      - /argocd
+  extraArgs:
+    - --insecure
+    - --rootpath
+    - /argocd
 
 
 # #################################
