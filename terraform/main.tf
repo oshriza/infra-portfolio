@@ -47,13 +47,16 @@ provider "helm" {
 
 resource "helm_release" "argocd" {
   name             = "argocd"
-  create_namespace = true
   namespace        = "argocdeks"
 
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
+  version = "4.9.15"
+  render_subchart_notes = true
+  dependency_update = true
+  create_namespace = true
   values = [
-    "${file("./argocd/values-argo.yaml")}"
+    file("./argocd/values-argo.yaml")
   ]
 
   set {

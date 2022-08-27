@@ -5,7 +5,7 @@ locals {
     azs      = slice(data.aws_availability_zones.available.names, 0, 2)
 }
 
-resource "aws_vpc" "oshri_vpc" {
+resource "aws_vpc" "this" {
   cidr_block = local.vpc_cidr
 
   tags = {
@@ -14,8 +14,8 @@ resource "aws_vpc" "oshri_vpc" {
   }
 }
 
-resource "aws_internet_gateway" "oshri_igw" {
-  vpc_id = aws_vpc.oshri_vpc.id
+resource "aws_internet_gateway" "this" {
+  vpc_id = aws_vpc.this.id
 
   tags = {
     Name = "${var.env_prefix}"
@@ -25,7 +25,7 @@ resource "aws_internet_gateway" "oshri_igw" {
 
 resource "aws_subnet" "private" {
   count = var.subnet_count
-  vpc_id                  = aws_vpc.oshri_vpc.id
+  vpc_id                  = aws_vpc.this.id
   availability_zone       = local.azs[count.index]
   # availability_zone       = var.aws_availability_zone[count.index]
   cidr_block              = "10.0.${count.index}.0/24"
@@ -39,7 +39,7 @@ resource "aws_subnet" "private" {
 
 resource "aws_subnet" "public" {
   count = var.subnet_count
-  vpc_id                  = aws_vpc.oshri_vpc.id
+  vpc_id                  = aws_vpc.this.id
   availability_zone       = local.azs[count.index]
   # availability_zone       = var.aws_availability_zone[count.index]
   cidr_block              = "10.0.${count.index + 2}.0/24"
@@ -72,11 +72,11 @@ resource "aws_nat_gateway" "nat" {
     Created_by = "Terraform"
   }
 
-  depends_on = [aws_internet_gateway.oshri_igw]
+  depends_on = [aws_internet_gateway.this]
 }
 
 resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.oshri_vpc.id
+  vpc_id = aws_vpc.this.id
   route = [
     {
       cidr_block                 = "0.0.0.0/0"
@@ -103,12 +103,12 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.oshri_vpc.id
+  vpc_id = aws_vpc.this.id
 
   route = [
     {
       cidr_block                 = "0.0.0.0/0"
-      gateway_id                 = aws_internet_gateway.oshri_igw.id
+      gateway_id                 = aws_internet_gateway.this.id
       nat_gateway_id             = ""
       carrier_gateway_id         = ""
       destination_prefix_list_id = ""
@@ -127,7 +127,7 @@ resource "aws_route_table" "public" {
     Name = "${var.env_prefix}-public"
     Created_by = "Terraform"
   }
-  depends_on = [aws_internet_gateway.oshri_igw]
+  depends_on = [aws_internet_gateway.this]
 }
 
 resource "aws_route_table_association" "private" {

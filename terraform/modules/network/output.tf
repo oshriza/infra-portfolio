@@ -1,5 +1,5 @@
 output "vpc" {
-    value = aws_vpc.oshri_vpc
+    value = aws_vpc.this
 }
 
 output "private_subnets" {

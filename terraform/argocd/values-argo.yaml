@@ -57,6 +57,9 @@ server:
         repoURL: 'git@github.com:oshriza/gitops-portfolio-taskmanager.git'
         targetRevision: HEAD
         path: task-manager-app-layer3
+        helm:
+          valueFiles:
+            - stg-values.yaml
       destination:
         namespace: default
         server: https://kubernetes.default.svc
