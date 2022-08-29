@@ -1,14 +1,13 @@
-# AWS EKS with Terraform - FastApi-React-MongoDB
-This project is part of develeap portfolio and provides a Python FastApi as backend and Reactjs as Frontend and MongoDB for the database.
-The project includes Jenkinsfile for the CI and E2E test part of the CI.
+# AWS EKS with Terraform
+This project is part of develeap portfolio and provisiniong cluster on AWS
+The project includes ArgoCD applications and configuration for CD pipeline 
 
 
 ## Run and Test
 
-For easy usage, there is a Docker Compose to easy run and test the app.
 ```bash
-docker-compose up --build
+terraform apply
 ```
 ```bash
-check on: localhost
+aws eks --region us-east-2 update-kubeconfig --name ${env_prefix}-default_cluster
 ```
