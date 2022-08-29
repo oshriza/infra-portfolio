@@ -11,3 +11,6 @@ terraform apply
 ```bash
 aws eks --region us-east-2 update-kubeconfig --name ${env_prefix}-default_cluster
 ```
+
+
+![eks-networking+CI CD](https://user-images.githubusercontent.com/24268589/187296973-a7a7e997-ea58-4c79-ac99-3117724d0abc.png)
