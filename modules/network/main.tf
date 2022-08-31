@@ -21,14 +21,10 @@ resource "aws_internet_gateway" "this" {
     Created_by = "Terraform"
   }
 }
-
 resource "aws_subnet" "private" {
   count = length(local.azs)
   vpc_id                  = aws_vpc.this.id
   availability_zone       = local.azs[count.index]
-  # availability_zone       = var.aws_availability_zone[count.index]
-  # cidr_block              = "10.0.${count.index}.0/24"
-  # cidr_block              = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)][count.index]
   cidr_block              = cidrsubnet(var.vpc_cidr, (32 - var.vpc_prefix) / 2, count.index)
   tags = {
     "Name"                       = "${var.env_prefix}-private-${count.index + 1}"
@@ -42,8 +38,6 @@ resource "aws_subnet" "public" {
   count = length(local.azs)
   vpc_id                  = aws_vpc.this.id
   availability_zone       = local.azs[count.index]
-  # availability_zone       = var.aws_availability_zone[count.index]
-  # cidr_block              = "10.0.${count.index + 2}.0/24"
   cidr_block              = cidrsubnet(var.vpc_cidr, (32 - var.vpc_prefix) / 2, count.index + length(aws_subnet.private.*))
   map_public_ip_on_launch = true
   tags = {
@@ -66,9 +60,6 @@ resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public[0].id
   connectivity_type = "public"
-  # count = 2
-  # subnet_id = aws_subnet.public[count.index].id
-
   tags = {
     Name = "${var.env_prefix}"
     Created_by = "Terraform"
