@@ -15,7 +15,8 @@ terraform {
 module "network" {
   source = "./modules/network"
   env_prefix            = "${var.env_prefix}-${terraform.workspace}"
-  aws_availability_zone = var.aws_availability_zone
+  vpc_cidr = var.vpc_cidr
+  vpc_prefix = var.vpc_prefix
 }
 
 module "ekscluster" {

@@ -1,12 +1,11 @@
 data "aws_availability_zones" "available" {}
 
 locals {
-    vpc_cidr = "10.0.0.0/16"
     azs      = slice(data.aws_availability_zones.available.names, 0, 2)
 }
 
 resource "aws_vpc" "this" {
-  cidr_block = local.vpc_cidr
+  cidr_block = var.vpc_cidr
 
   tags = {
     Name = "${var.env_prefix}"
@@ -24,11 +23,13 @@ resource "aws_internet_gateway" "this" {
 }
 
 resource "aws_subnet" "private" {
-  count = var.subnet_count
+  count = length(local.azs)
   vpc_id                  = aws_vpc.this.id
   availability_zone       = local.azs[count.index]
   # availability_zone       = var.aws_availability_zone[count.index]
-  cidr_block              = "10.0.${count.index}.0/24"
+  # cidr_block              = "10.0.${count.index}.0/24"
+  # cidr_block              = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)][count.index]
+  cidr_block              = cidrsubnet(var.vpc_cidr, (32 - var.vpc_prefix) / 2, count.index)
   tags = {
     "Name"                       = "${var.env_prefix}-private-${count.index + 1}"
     "kubernetes.io/role/internal-elb" = "1"
@@ -38,11 +39,12 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_subnet" "public" {
-  count = var.subnet_count
+  count = length(local.azs)
   vpc_id                  = aws_vpc.this.id
   availability_zone       = local.azs[count.index]
   # availability_zone       = var.aws_availability_zone[count.index]
-  cidr_block              = "10.0.${count.index + 2}.0/24"
+  # cidr_block              = "10.0.${count.index + 2}.0/24"
+  cidr_block              = cidrsubnet(var.vpc_cidr, (32 - var.vpc_prefix) / 2, count.index + length(aws_subnet.private.*))
   map_public_ip_on_launch = true
   tags = {
     "Name"                       = "${var.env_prefix}-public-${count.index + 1}"
