@@ -13,19 +13,19 @@ terraform {
 
 
 module "network" {
-  source = "./modules/network"
-  env_prefix            = "${var.env_prefix}-${terraform.workspace}"
-  vpc_cidr = var.vpc_cidr
+  source     = "./modules/network"
+  env_prefix = "${var.env_prefix}-${terraform.workspace}"
+  vpc_cidr   = var.vpc_cidr
   vpc_prefix = var.vpc_prefix
 }
 
 module "ekscluster" {
-  source           = "./modules/ekscluster"
-  vpc_id           = module.network.vpc
+  source = "./modules/ekscluster"
+  vpc_id = module.network.vpc
   # test_policy_arn  = module.ekscluster.test_policy_arn
-  private_subnets  = module.network.private_subnets
-  public_subnets   = module.network.public_subnets
-  env_prefix       = "${var.env_prefix}-${terraform.workspace}"
+  private_subnets = module.network.private_subnets
+  public_subnets  = module.network.public_subnets
+  env_prefix      = "${var.env_prefix}-${terraform.workspace}"
 }
 
 # provider "helm" {
@@ -47,15 +47,15 @@ provider "helm" {
 }
 
 resource "helm_release" "argocd" {
-  name             = "argocd"
-  namespace        = "argocdeks"
+  name      = "argocd"
+  namespace = "argocdeks"
 
-  repository = "https://argoproj.github.io/argo-helm"
-  chart      = "argo-cd"
-  version = "4.9.15"
+  repository            = "https://argoproj.github.io/argo-helm"
+  chart                 = "argo-cd"
+  version               = "4.9.15"
   render_subchart_notes = true
-  dependency_update = true
-  create_namespace = true
+  dependency_update     = true
+  create_namespace      = true
   values = [
     file("./argocd/values-argo.yaml")
   ]
